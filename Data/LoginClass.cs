@@ -14,19 +14,28 @@ namespace MyLogin.Data
 
         public void SQL()
         {
-            SqlConnection conn = new SqlConnection("Data Source=192.168.2.2;Initial Catalog=LoginDB;User ID=sa;Password=Passw0rd;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            SqlConnection conn = new SqlConnection("Data Source=.;Initial Catalog=LoginDB;User ID=sa;Password=Passw0rd;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
             conn.Open();
 
             SqlCommand command = new SqlCommand(
-                "Select LoginUser from [Table]", conn);
-            //    "Select LoginUser from [Table] where LoginUser=@userlogin", conn);
-            command.Parameters.AddWithValue("@userlogin", username);
+                "Select UserName, [Password] from MyLogin Where UserName = @loginUserName", conn);
+            command.Parameters.AddWithValue("@loginUserName", username);
+            command.Parameters.AddWithValue("@loginPassword", password);
             // int result = command.ExecuteNonQuery();
             using (SqlDataReader reader = command.ExecuteReader())
             {
                 while (reader.Read())
                 {
-                    Console.WriteLine(String.Format("{0}", reader["LoginUser"]));
+                    if (reader.GetString(0) == username && reader.GetString(1) == password)
+                    {
+                        Console.WriteLine("Username and Password is correct");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Username or Password is incorrect");
+                    }
+
+                    //Console.WriteLine($"{reader["UserName"]}");
                 }
             }
 
